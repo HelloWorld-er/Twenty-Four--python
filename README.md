@@ -1,2 +1,2 @@
 # Twenty-Four--python
-python tkinter
+python custom tkinter
