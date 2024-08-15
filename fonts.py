@@ -16,8 +16,8 @@ def get_aside_bar_default(size=20):
 def get_game_mode_button(size=18):
 	return get_font(size=size)
 
-def get_desc_title(size=18):
-	return get_font(size=size)
+def get_desc_title(size=24):
+	return get_font(size=size, weight="bold")
 
 def get_desc_content(size=16):
 	return get_font(size=size)
