@@ -22,11 +22,11 @@ class DescriptionFrame(customtkinter.CTkFrame):
 		# place widgets
 		self.desc_title.grid(row=0, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
 		self.desc_content.grid(row=1, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
-
-	def update_desc_title(self, desc_title):
+	
+	def update_desc_title(self, desc_title=""):
 		self.desc_title.configure(text=desc_title)
 
-	def update_desc_content(self, desc_content):
+	def update_desc_content(self, desc_content=""):
 		self.desc_content.delete("0.0", "end")
 		self.desc_content.insert("0.0", desc_content)
 
