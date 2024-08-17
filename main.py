@@ -1,8 +1,32 @@
 import customtkinter
-import fonts
 
+import fonts
+from sensitive_scrollable_frame import SensitiveScrollableFrame
 
 game_modes_list = ["Challenge", "Solver", "Duel"]
+
+
+class DescriptionContentFrame(SensitiveScrollableFrame):
+	def __init__(self, parent, *args, **kwargs):
+		# create frame
+		super().__init__(parent, *args, **kwargs)
+		
+		# initialize the grid manager
+		self.grid_columnconfigure(0, weight=1)
+		
+		# define widgets
+		self.desc_content = customtkinter.CTkLabel(self, font=fonts.get_desc_content(), fg_color="white")
+		self.update_desc_content()
+		self.desc_content.bind("<Configure>", self.resize_desc_content)
+		
+		# place widgets
+		self.desc_content.grid(row=0, column=0, sticky="nsew")
+	
+	def update_desc_content(self, desc_content=""):
+		self.desc_content.configure(text=desc_content)
+	
+	def resize_desc_content(self, event):
+		self.desc_content.configure(wraplength=self.get_real_time_canvas_width() - 2)
 
 
 class DescriptionFrame(customtkinter.CTkFrame):
@@ -12,23 +36,22 @@ class DescriptionFrame(customtkinter.CTkFrame):
 		
 		# initialize the grid manager
 		self.grid_columnconfigure(0, weight=1)
-		self.grid_rowconfigure((0, 1), weight=1) # description-title & description-content
-
+		self.grid_rowconfigure((0, 1), weight=1)  # description-title & description-content
+		
 		# define widgets
-		self.desc_title = customtkinter.CTkLabel(self, text=desc_title, font=fonts.get_desc_title())
-		self.desc_content = customtkinter.CTkTextbox(self, wrap="word", state="disabled", font=fonts.get_desc_content())
-		self.update_desc_content(desc_content)
-
+		self.desc_title = customtkinter.CTkLabel(self, font=fonts.get_desc_title())
+		self.update_desc_title(desc_title)
+		self.desc_content_frame = DescriptionContentFrame(self)
+		
 		# place widgets
 		self.desc_title.grid(row=0, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
-		self.desc_content.grid(row=1, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
+		self.desc_content_frame.grid(row=1, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
 	
 	def update_desc_title(self, desc_title=""):
 		self.desc_title.configure(text=desc_title)
-
+	
 	def update_desc_content(self, desc_content=""):
-		self.desc_content.delete("0.0", "end")
-		self.desc_content.insert("0.0", desc_content)
+		self.desc_content_frame.update_desc_content(desc_content)
 
 
 class GameModeFrame(customtkinter.CTkFrame):
@@ -45,12 +68,15 @@ class GameModeFrame(customtkinter.CTkFrame):
 		# define widgets
 		game_mode_widgets_dict = {}
 		for game_mode in game_modes_list:
-			game_mode_widgets_dict[game_mode] = customtkinter.CTkButton(self, text=f"{game_mode} Mode", font=fonts.get_game_mode_button(), fg_color=("DarkOrange2", "DarkOrange3"), hover_color=("DarkOrange3", "DarkOrange4"), border_width=2)
+			game_mode_widgets_dict[game_mode] = customtkinter.CTkButton(self, text=f"{game_mode} Mode",
+			                                                            font=fonts.get_game_mode_button(),
+			                                                            fg_color=("DarkOrange2", "DarkOrange3"),
+			                                                            hover_color=("DarkOrange3", "DarkOrange4"),
+			                                                            border_width=2)
 		
 		# place widgets
 		for i, game_mode in enumerate(game_mode_widgets_dict.keys()):
 			game_mode_widgets_dict[game_mode].grid(row=i, column=0, sticky="ew", ipady=5, padx=5, pady=5)
-		
 
 
 class AsideBarFrame(customtkinter.CTkFrame):
@@ -64,9 +90,12 @@ class AsideBarFrame(customtkinter.CTkFrame):
 		
 		# define widgets
 		self.title = customtkinter.CTkLabel(self, text=self.title, font=fonts.get_heading())
-		self.introduction_button = customtkinter.CTkButton(self, text="Introduction", font=fonts.get_aside_bar_default(), corner_radius=6, border_width=2)
+		self.introduction_button = customtkinter.CTkButton(self, text="Introduction",
+		                                                   font=fonts.get_aside_bar_default(), corner_radius=6,
+		                                                   border_width=2)
 		self.navigation_frame = GameModeFrame(self)
-		self.settings_button = customtkinter.CTkButton(self, text="Settings", font=fonts.get_aside_bar_default(), corner_radius=6, border_width=2)
+		self.settings_button = customtkinter.CTkButton(self, text="Settings", font=fonts.get_aside_bar_default(),
+		                                               corner_radius=6, border_width=2)
 		
 		# place widgets
 		self.title.grid(row=0, column=0, sticky="ew", ipadx=5, ipady=10, padx=10, pady=12)
@@ -84,7 +113,9 @@ class IntroductionFrame(customtkinter.CTkFrame):
 		self.grid_columnconfigure(0, weight=1)
 		
 		# define widgets
-		self.desc = DescriptionFrame(self, desc_title="Twenty Four Introduction", desc_content="")
+		self.desc = DescriptionFrame(self, desc_title="Twenty Four Introduction")
+		with open("./desc/introduction_desc", "r") as desc_file:
+			self.desc.update_desc_content(''.join(_.strip() + " " if _ != "\n" else _ for _ in desc_file.readlines()))
 		
 		# place widgets
 		self.desc.grid(row=0, column=0, sticky="ew", ipady=5, padx=10, pady=10)
@@ -121,7 +152,7 @@ class App(customtkinter.CTk):
 	def __init__(self, *args, **kwargs):
 		# create window
 		super().__init__(*args, **kwargs)
-		self.title("The Classical Game -- Twenty Four")
+		self.title("The Classical Game -- Twenty Four Puzzle")
 		self.geometry("1000x700")
 		
 		# initialize the gird manager
@@ -130,7 +161,7 @@ class App(customtkinter.CTk):
 		self.grid_rowconfigure(0, weight=1)
 		
 		# define widgets
-		self.navigation_bar_frame = AsideBarFrame(self, "Twenty Four")
+		self.navigation_bar_frame = AsideBarFrame(self, "Twenty Four Puzzle")
 		self.introduction_frame = IntroductionFrame(self)
 		self.challenge_mode_frame = ChallengeModeFrame(self)
 		self.solver_mode_frame = SolverModeFrame(self)
@@ -139,11 +170,10 @@ class App(customtkinter.CTk):
 		# place widgets
 		self.navigation_bar_frame.grid(row=0, column=0, sticky="nsew")
 		self.introduction_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
-		# self.challenge_mode_frame.grid(row=0, column=1, sticky="nsew")
-		# self.solver_mode_frame.grid(row=0, column=1, sticky="nsew")
-		# self.duel_mode_frame.grid(row=0, column=1, sticky="nsew")
-		
-		
+	# self.challenge_mode_frame.grid(row=0, column=1, sticky="nsew")
+	# self.solver_mode_frame.grid(row=0, column=1, sticky="nsew")
+	# self.duel_mode_frame.grid(row=0, column=1, sticky="nsew")
+
 
 def main():
 	# customtkinter.set_appearance_mode("dark")

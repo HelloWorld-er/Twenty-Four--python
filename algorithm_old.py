@@ -148,7 +148,8 @@ def simplify_formula_first_part(complete_answer):
 						if complete_answer[brackets[layer - 1] - 1] == '-':
 							change_symbol_from_subtraction = True
 					elif complete_answer[brackets[layer - 1] - 2] == 1:
-						temporary_symbol, temporary_index = before_or_after_one(brackets[layer - 1] - 2, True, complete_answer)
+						temporary_symbol, temporary_index = before_or_after_one(brackets[layer - 1] - 2, True,
+						                                                        complete_answer)
 						if temporary_symbol == "/":
 							pass
 						elif type(temporary_symbol) is int:
@@ -218,7 +219,8 @@ def simplify_formula_third_part(part_of_group):
 		symbol = part_of_group[step]
 		if type(symbol) is not str:
 			sort_list.append(
-				{"representative": str(part_of_group[step]) if type(part_of_group[step]) is not list else ''.join(list(map(str, part_of_group[step]))), "operator": part_of_group[step - 1], "index": step})
+				{"representative": str(part_of_group[step]) if type(part_of_group[step]) is not list else ''.join(
+					list(map(str, part_of_group[step]))), "operator": part_of_group[step - 1], "index": step})
 	min_number = 0
 	for step in range(len(sort_list)):
 		element = sort_list[step]
@@ -260,7 +262,8 @@ def simplify_formula_forth_part(group):
 	compare_nums = []
 	for step in range(len(group)):
 		part_of_group = group[step]
-		compare_nums.append({"representative": ''.join(list(map(str, part_of_group))), "operator": part_of_group[0], "index": step})
+		compare_nums.append(
+			{"representative": ''.join(list(map(str, part_of_group))), "operator": part_of_group[0], "index": step})
 	compare_nums.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	for step in range(len(compare_nums)):
 		element = compare_nums[step]
