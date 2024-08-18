@@ -27,7 +27,6 @@ class DescriptionContentFrame(SensitiveScrollableFrame):
 	
 	def resize_desc_content(self, event):
 		self.desc_content.configure(wraplength=self.desc_content.winfo_width())
-		super()._fit_frame_dimensions_to_canvas(event)
 
 
 class DescriptionFrame(customtkinter.CTkFrame):
