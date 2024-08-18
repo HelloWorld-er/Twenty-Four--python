@@ -7,17 +7,17 @@ game_modes_list = ["Challenge", "Solver", "Duel"]
 
 
 class DescriptionContentFrame(SensitiveScrollableFrame):
-	def __init__(self, parent, *args, **kwargs):
+	def __init__(self, parent, *args, width=30, height=30, **kwargs):
 		# create frame
-		super().__init__(parent, *args, **kwargs)
+		super().__init__(parent, *args, width=width, height=height, **kwargs)
 		
 		# initialize the grid manager
 		self.grid_columnconfigure(0, weight=1)
+		self.grid_rowconfigure(0, weight=1)
 		
 		# define widgets
-		self.desc_content = customtkinter.CTkLabel(self, font=fonts.get_desc_content(), fg_color="white")
-		self.update_desc_content()
-		self.desc_content.bind("<Configure>", self.resize_desc_content)
+		self.desc_content = customtkinter.CTkLabel(self, font=fonts.get_desc_content(), text="")
+		self._parent_canvas.bind("<Configure>", self.resize_desc_content)
 		
 		# place widgets
 		self.desc_content.grid(row=0, column=0, sticky="nsew")
@@ -26,7 +26,8 @@ class DescriptionContentFrame(SensitiveScrollableFrame):
 		self.desc_content.configure(text=desc_content)
 	
 	def resize_desc_content(self, event):
-		self.desc_content.configure(wraplength=self.get_real_time_canvas_width() - 2)
+		self.desc_content.configure(wraplength=self.desc_content.winfo_width())
+		super()._fit_frame_dimensions_to_canvas(event)
 
 
 class DescriptionFrame(customtkinter.CTkFrame):
@@ -42,6 +43,7 @@ class DescriptionFrame(customtkinter.CTkFrame):
 		self.desc_title = customtkinter.CTkLabel(self, font=fonts.get_desc_title())
 		self.update_desc_title(desc_title)
 		self.desc_content_frame = DescriptionContentFrame(self)
+		self.update_desc_content(desc_content)
 		
 		# place widgets
 		self.desc_title.grid(row=0, column=0, sticky="ew", ipadx=5, ipady=2, padx=10, pady=5)
@@ -115,10 +117,11 @@ class IntroductionFrame(customtkinter.CTkFrame):
 		# define widgets
 		self.desc = DescriptionFrame(self, desc_title="Twenty Four Introduction")
 		with open("./desc/introduction_desc", "r") as desc_file:
-			self.desc.update_desc_content(''.join(_.strip() + " " if _ != "\n" else _ for _ in desc_file.readlines()))
+			self.desc.update_desc_content(''.join(line.strip() if line != '\n' else line for line in desc_file.readlines()))
 		
 		# place widgets
 		self.desc.grid(row=0, column=0, sticky="ew", ipady=5, padx=10, pady=10)
+		
 
 
 class ChallengeModeFrame(customtkinter.CTkFrame):
