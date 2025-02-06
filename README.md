@@ -1,2 +1,2 @@
-# Twenty-Four--python
+# Twenty-Four-Puzzle-In-Python
 python tkinter
